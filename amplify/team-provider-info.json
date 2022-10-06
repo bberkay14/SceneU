@@ -1,0 +1,21 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-sceneu-dev-164821-authRole",
+      "UnauthRoleArn": "arn:aws:iam::021819239508:role/amplify-sceneu-dev-164821-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::021819239508:role/amplify-sceneu-dev-164821-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-sceneu-dev-164821-deployment",
+      "UnauthRoleName": "amplify-sceneu-dev-164821-unauthRole",
+      "StackName": "amplify-sceneu-dev-164821",
+      "StackId": "arn:aws:cloudformation:us-east-1:021819239508:stack/amplify-sceneu-dev-164821/5a985f40-d77a-11ec-bb60-1260d9f8a14b",
+      "AmplifyAppId": "dx38mx5c9n68o"
+    },
+    "categories": {
+      "auth": {
+        "sceneuc86991b1": {},
+        "true": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "resourceName": "sceneuclone",
+  "policyUUID": "065c835f",
+  "bucketName": "sceneu7674af1fcb1142308c10d145b5b7e606",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

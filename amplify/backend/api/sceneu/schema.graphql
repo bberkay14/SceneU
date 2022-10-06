@@ -1,0 +1,289 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+
+type User @model @searchable {
+  id: ID! @primaryKey
+  username: String!
+  email: String!
+  ppImageUri: String!
+
+  posts: [Post] @hasMany(indexName: "byPost", fields: ["id"])
+
+  questions: [Question] @hasMany(indexName: "byQuestion", fields: ["id"])
+
+  postToVotes: [PostToVote] @hasMany(indexName: "byPostToVote", fields: ["id"])
+
+  votes: [Vote] @hasMany(indexName: "byVote", fields: ["id"])
+
+  #likedPost: [Post] @hasMany(indexName: "byLikedPost", fields: ["id"])
+  #likedPost: [Post] @manyToMany(relationName: "UserPosts")
+  #likesComment: [Comment] @hasMany(indexName: "byLikesComment", fields: ["id"])
+  authoredComment: [Comment] @hasMany(indexName: "byAuthoredComment", fields: ["id"])
+
+  #likedQuestion: [Question] @hasMany(indexName: "byLikedQuestion", fields: ["id"])
+  #likesCommentQu: [CommentQu] @hasMany
+  authoredCommentQu: [CommentQu] @hasMany(indexName: "byAuthoredCommentQu", fields: ["id"])
+
+  #likedPostToVote: [PostToVote] @hasMany(indexName: "byLikedPostToVote", fields: ["id"])
+  #likesCommentPoll: [CommentPoll] @hasMany
+  authoredCommentPoll: [CommentPoll] @hasMany(indexName: "byAuthoredCommentPoll", fields: ["id"])
+
+  authoredCommentToComment: [CommentToComment] @hasMany(indexName: "byAuthoredCommentToComment", fields: ["id"])
+
+}
+
+#--------------------------------------------------------------------------------
+
+
+type Post @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID! @index(name: "byPost")
+  user: User @belongsTo(fields: ["userID"]) 
+
+  songID: ID! 
+  song: Song @hasOne(fields: ["songID"])
+
+  createdAt: AWSDateTime!
+
+  comments: [Comment] @hasMany(indexName: "byCommentPost", fields: ["id"])
+
+  #type: String! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
+  #createdAt: String!
+
+  hashtagID: ID! @index(name: "byHPost")
+  hashtag: HashTag @belongsTo(fields: ["hashtagID"])
+}
+
+type UserPostLike @model @searchable {
+  id: ID!
+  userID: ID 
+  user: User @hasOne(fields: ["userID"])
+  postID: ID
+  post: Post @hasOne(fields: ["postID"])
+}
+
+type UserCommentLike @model @searchable {
+  id: ID!
+  userID: ID 
+  user: User@hasOne(fields: ["userID"])
+  commentID: ID
+  comment: Comment@hasOne(fields: ["commentID"])
+}
+
+type Question @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID! @index(name: "byQuestion")
+  user: User @belongsTo(fields: ["userID"])
+
+  songID: ID! 
+  song: Song @hasOne(fields: ["songID"])
+
+  createdAt: AWSDateTime!
+
+  comments: [CommentQu] @hasMany(indexName: "byCommentQuestion", fields: ["id"])
+
+  #type: String! @index(name: "questionsByDate", queryField: "questionsByDate", sortKeyFields: ["createdAt"])
+  #createdAt: String!
+}
+type UserQuestionLike @model @searchable {
+  id: ID!
+  userID: ID
+  user: User @hasOne(fields: ["userID"])
+  postID: ID
+  post: Question @hasOne(fields: ["postID"])
+}
+
+type UserCommentQuLike @model @searchable {
+  id: ID!
+  userID: ID
+  user: User@hasOne(fields: ["userID"])
+  commentID: ID
+  comment: CommentQu@hasOne(fields: ["commentID"])
+}
+
+type PostToVote @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID! @index(name: "byPostToVote")
+  user: User @belongsTo(fields: ["userID"])
+
+  songID: ID! 
+  song: Song @hasOne(fields: ["songID"])
+
+  createdAt: AWSDateTime!
+
+
+  comments: [CommentPoll] @hasMany(indexName: "byCommentPostToVote", fields: ["id"])
+
+  #type: String! @index(name: "postToVotesByDate", queryField: "postToVotesByDate", sortKeyFields: ["createdAt"])
+  #createdAt: String!
+}
+
+type UserPostToVoteLike @model @searchable {
+  id: ID!
+  userID: ID
+  user: User @hasOne(fields: ["userID"])
+  postID: ID
+  post: PostToVote @hasOne(fields: ["postID"])
+}
+
+type UserCommentPollLike @model @searchable {
+  id: ID!
+  userID: ID
+  user: User@hasOne(fields: ["userID"])
+  commentID: ID
+  comment: CommentPoll@hasOne(fields: ["commentID"])
+}
+
+type Vote @model @searchable {
+  id: ID! 
+
+  userID: ID! @index(name: "byVote")
+  user: User @belongsTo(fields: ["userID"])
+
+  optionID: ID! @index(name: "byOption")
+  options: Option @belongsTo(fields: ["optionID"])
+
+  createdAt: AWSDateTime
+}
+
+#--------------------------------------------------------------------------------
+
+type Comment @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID!  @index(name: "byAuthoredComment")
+  user: User @belongsTo(fields: ["userID"])
+
+  createdAt: AWSDateTime!
+
+  postID: ID! @index(name: "byCommentPost")
+  post: Post @belongsTo(fields: ["postID"])
+  songID: ID! 
+  song: Song @hasOne(fields: ["songID"])
+
+  
+  hasReplies: [CommentToComment] @hasMany
+
+  hashtagID: ID! @index(name: "byHComment")
+  hashtags: HashTag @belongsTo(fields: ["hashtagID"])
+
+  #likedUserID: [User] @hasMany
+  #likedUserID: ID @index(name: "byCommentPost")
+}
+
+type CommentQu @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID! @index(name: "byAuthoredCommentQu")
+  user: User @belongsTo(fields: ["userID"])
+
+  createdAt: AWSDateTime!
+
+  postID: ID! @index(name: "byCommentQuestion")
+  post: Question @belongsTo(fields: ["postID"])
+
+  hasReplies: [CommentToComment] @hasMany
+  #likedBy: [User] @hasMany
+}
+
+type CommentPoll @model @searchable {
+  id: ID! 
+  videoUri: String!
+  description: String!
+
+  userID: ID! @index(name: "byAuthoredCommentPoll")
+  user: User @belongsTo(fields: ["userID"])
+
+  createdAt: AWSDateTime!
+
+  postID: ID! @index(name: "byCommentPostToVote")
+  post: PostToVote @belongsTo(fields: ["postID"])
+
+  hasReplies: [CommentToComment] @hasMany
+  #likedBy: [User] @hasMany
+}
+
+type CommentToComment @model @searchable {
+  id: ID! 
+  description: String!
+
+  userID: ID! @index(name: "byAuthoredCommentToComment")
+  user: User @belongsTo(fields: ["userID"])
+
+  createdAt: AWSDateTime!
+
+  likedBy: [User] @hasMany
+}
+
+type UserCommentToCommentLike @model @searchable {
+  id: ID!
+  userID: ID
+  user: User@hasOne(fields: ["userID"])
+  commentID: ID
+  comment: CommentToComment@hasOne(fields: ["commentID"])
+}
+
+#--------------------------------------------------------------------------------
+
+type HashTag @model @searchable {
+  id: ID!
+  nameHT: String!
+  
+  posts: [Post] @hasMany(indexName: "byHPost", fields: ["id"])
+  comments: [Comment] @hasMany(indexName: "byHComment", fields: ["id"])
+}  
+
+type HashTagQu @model @searchable {
+  id: ID!
+  nameHT: String!
+
+  posts: [Question] 
+}
+
+type HashTagPoll @model @searchable {
+  id: ID!
+  nameHT: String!
+  
+  posts: [PostToVote] @hasMany
+
+  options: [Option] @hasMany(indexName: "byHashTagPoll", fields: ["id"])
+}
+
+#--------------------------------------------------------------------------------
+
+type Option @model @searchable {
+  id: ID! 
+  text: String!
+
+  hashTagPollID: ID! @index(name: "byHashTagPoll")
+  hashTagPoll: HashTagPoll @belongsTo(fields: ["hashTagPollID"])
+
+  
+  votes: [Vote] @hasMany(indexName: "byOption", fields: ["id"])
+}
+
+type Song @model @searchable {
+  id: ID! 
+  name: String!
+  imageUri: String!
+}
+
+type Query {
+    getTodos: [Post]
+}
+
